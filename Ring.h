@@ -6,10 +6,9 @@ using namespace std;
 template<typename Key, typename Info>
 class Ring;
 template<typename Key, typename Info>
-void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2);
+void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int count, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2);
 template<typename Key, typename Info>
-void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2);
-
+void split_key(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, bool direct, int count, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2);
 template <typename Key, typename Info>
 class Ring { //doubly linked list with iterator
     private:
@@ -31,11 +30,11 @@ class Ring { //doubly linked list with iterator
             {
             };
 
-            friend ostream& operator<<(ostrean& out, const Node& s)
+            friend ostream& operator<<(ostream& out, const Node& s)
             {
                 out << s.key << " " << s.info;
                 return out;
-            }
+            };
         };
         Node* Any;
     public:
@@ -43,94 +42,95 @@ class Ring { //doubly linked list with iterator
         template<typename K, typename I>
         class iterator
         {
-            Node* curr;
+            Node* itr;
         public:
-            iterator(Node* src)
+            iterator(Node* s)
             {
-                curr = src;
-            } 
+                itr = s;
+            };
 
             iterator()
             {
-                curr = nullptr;
-            }
+                itr = nullptr;
+            };
 
-            iterator(const iterator& src)
+            iterator(const iterator& s)
             {
-                curr = src.curr;
-            }
+                itr = s.itr;
+            };
 
             ~iterator()
             {
-            }
+            };
 
             iterator& operator++()
             {
                 goNext();
                 return *this;
-            }
+            };
 
             iterator& operator--()
             {
                 goPrev();
                 return *this;
-            }
+            };
 
             iterator operator=(const iterator& s)
-            {}
+            {
+                itr = s.itr;
+                return *this;
+            };
 
             iterator operator+(int d)
-            {}
+            {};
 
             iterator operator-(int d)
             {
-            }
+            };
 
             bool operator==(const iterator& s)
             {
-                return curr == s.curr;
-            }
+                return itr == s.itr;
+            };
 
             bool operator!=(const iterator& s)
             {
-                return curr != s.curr
-            }
+                return itr != s.itr;
+            };
 
-            Node& operator*()
+            Node& operator*() const
             {
-                return *curr;
-            }
+                return *itr;
+            };
 
             Node* operator->()
             {
-                return curr;
-            }
+                return itr;
+            };
 
-            friend ostrean& operator<<(ostrean& o, const iterator& it)
+            friend ostream& operator<<(ostream& o, const iterator& it)
             {
-                o << *it
+                o << *it;
                 return o;
-            }
+            };
 
             bool iter_valid()
             {
-                if(curr)
+                if(itr)
                 return true;
                 else 
                 return false;
-            }
+            };
 
             void goNext()
             {
-                curr = curr->next;
-            }
-
-            
+                itr = itr->next;
+            };
 
             void goPrev()
             {
-                curr = curr->prev;
-            }
+                itr = itr->prev;
+            };
 
         };
         typedef iterator<Key, Info> Iterator;
@@ -138,13 +138,13 @@ class Ring { //doubly linked list with iterator
 
         Iterator begin()
         {
-            return Iterator(Any);
-        }
+            return Iterator(Any->next);
+        };
 
         Iterator end()
         {
             return Iterator(Any);
-        }
+        };
 
         Iterator last()
         {
@@ -152,17 +152,17 @@ class Ring { //doubly linked list with iterator
             return Iterator(nullptr);
             else
             return Iterator(Any->Prev);
-        }
+        };
 
         Const_Iterator const_begin() const 
         {
             return Const_Iterator(Any);
-        }
+        };
 
         Const_Iterator const_end() const
         {
             return Const_Iterator(Any);
-        }
+        };
 
         Const_Iterator const_last() const
         {
@@ -170,17 +170,16 @@ class Ring { //doubly linked list with iterator
             return Const_Iterator(nullptr);
             
             return Const_Iterator(Any->prev);
-        }
+        };
 
         Ring() : Any(nullptr)
         {
-
-        }
+        };
 
         ~Ring()
         {
-            clear();
-        }
+            removeAll();
+        };
 
         Ring(const Ring<Key, Info>& s)
         {
@@ -195,14 +194,14 @@ class Ring { //doubly linked list with iterator
                 } while (it != s.const_end());
                 
             }
-        }
+        };
 
         void insert(Const_Iterator& s)
         {
             if(!s.iter_valid())
-            throw std::domain_error;
+            throw std::domain_error("Error");
             insert(s->key, s->info);
-        }
+        };
 
         void insert(const Key& NewK, const Info& NewI)
         {
@@ -218,30 +217,30 @@ class Ring { //doubly linked list with iterator
             {
                 NewNode->next = Any->next;
                 NewNode->next->prev = NewNode;
-                NewNOde->prev = Any;
+                NewNode->prev = Any;
                 Any->next = NewNode;
                 Any = NewNode;
             }
-        }
+        };
 
         void removeAll()
         {
             while(Any)
             remove();
-        }
+        };
 
         void remove()
         {
             if(Any->next == Any)
             delete Any;
             Any = nullptr;
-        }
+        };
 
         bool is_empty() const
         {
             if(!Any) return true;
             return false;
-        }
+        };
         int amount() const
         {
             if(!Any)
@@ -254,7 +253,7 @@ class Ring { //doubly linked list with iterator
                 i++;
             } while (it != const_last());
             return i + 1;
-        }
+        };
         void print()
         {
             if(is_empty())
@@ -268,24 +267,25 @@ class Ring { //doubly linked list with iterator
                 ++it;
             } while (it != const_end());
             
-        }
-    friend void split_pos<Key, Info>(const Ring<Key, Info>& ring, int start_pos, bool direct, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2);
-    friend void split_key<Key, Info>(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, bool direct, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2);
+        };
+    //friend void split_pos<Key, Info>(const Ring<Key, Info>&, int, bool, int, Ring<Key, Info>&, int, bool, Ring<Key, Info>&, int, bool);
+    //friend void split_key<Key, Info>(const Ring<Key, Info>&, const Key&, int, bool, int, Ring<Key, Info>&, int, bool, Ring<Key, Info>&, int, bool);
 };
 
-template<typename Key, typename Info>
-void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2)
+/*template<typename Key, typename Info>
+void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int count, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2)
 {
+    ring.const_begin() = start_pos;
     typename Ring<Key, Info>::Const_Iterator iter1;
     typename Ring<Key, Info>::Const_Iterator iter2;
     int c = 0;
-    while(c < count &&)
+    while(c < count)
     {
         int oc = 0;
         if(direct1 == true)
         {
             iter1 = ring.const_begin();
-            while(oc < len1 &&)
+            while(oc < len1)
             {
                 ring1.insert(iter1);
                 iter1++;
@@ -295,7 +295,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, Ring<Key
         else
         {
             iter1 = ring.const_last();
-            while(oc < len1 &&)
+            while(oc < len1)
             {
                 ring1.insert(iter1);
                 iter1++;
@@ -307,7 +307,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, Ring<Key
         if(direct2 == true)
         {
             iter2 = ring.const_begin();
-            while(oc < len2 &&)
+            while(oc < len2)
             {
                 ring2.insert(iter2);
                 iter2++;
@@ -317,7 +317,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, Ring<Key
         else 
         {
             iter2 = ring.const_last();
-            whiel(oc < len2 &&)
+            while(oc < len2)
             {
                 ring2.insert(iter2);
                 iter2++;
@@ -336,7 +336,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, Ring<Key
 
 
 template<typename Key, typename Info>
-void split_key(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, bool direct, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2)
+void split_key(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, bool direct, int count, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2)
 {
 //ring={1,}{2,}{3,}{4,}{5,}
 //start_key=2, start_occ=100, direct=true, count=4
@@ -345,5 +345,5 @@ void split_key(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, 
 //
 //ring1={2,}{3,}{5,}{1,}{3,}{4,}{1,}{2,}
 //ring2={5,}{2,}{4,}
-}
+}*/
 #endif
