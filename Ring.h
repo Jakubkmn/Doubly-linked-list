@@ -63,23 +63,37 @@ class Ring { //doubly linked list with iterator
             {
             };
 
-            iterator& operator++()
+            iterator& operator++() //pre inc
             {
                 goNext();
                 return *this;
             };
 
-            iterator& operator--()
+            iterator operator++(int) //post inc
+            {
+                iterator before = *this;
+                goNext();
+                return before;
+            };
+
+            iterator& operator--() //pre dec
             {
                 goPrev();
                 return *this;
             };
 
-            iterator operator=(const iterator& s)
+            iterator operator--(int) //post dec
             {
-                itr = s.itr;
+                iterator before = *this;
+                goPrev();
+                return before;
+            }
+
+            /*iterator operator=(const iterator& s)
+            {
+                iterator(s);
                 return *this;
-            };
+            };*/
 
             iterator operator+(int d)
             {};
@@ -131,6 +145,18 @@ class Ring { //doubly linked list with iterator
             {
                 itr = itr->prev;
             };
+
+            void goNext(int n)
+            {
+                for(int i = 0; i < n; i++)
+                goNext();
+            };
+
+            void goPrev(int n)
+            {
+                for(int i = 0; i < n; i++)
+                goPrev();
+            }
 
         };
         typedef iterator<Key, Info> Iterator;
@@ -198,28 +224,53 @@ class Ring { //doubly linked list with iterator
 
         void insert(Const_Iterator& s)
         {
+           
             if(!s.iter_valid())
             throw std::domain_error("Error");
             insert(s->key, s->info);
+        
+            /*Node* tmp = new Node;
+            if(s.itr == Any->prev)
+            {
+                s.itr->prev = tmp;
+            }
+            s.itr->prev = tmp;
+            tmp->prev->next=tmp;*/
         };
+
+        /*void insertFront(const Key& NewK, const Info& NewI)
+        {
+            if(!s.iter_valid())
+            throw std::domain_error("Error");
+            Iterator s.it = begin();
+            insert(s.it, s->key, s->info);
+        };*/
 
         void insert(const Key& NewK, const Info& NewI)
         {
             Node* NewNode = new Node(NewK, NewI);
-
-            if(!Any)
+            NewNode->key = NewK;
+            NewNode->info = NewI;
+           if(!Any)
             {
+                Any = NewNode;
                 NewNode->next = NewNode;
                 NewNode->prev = NewNode;
-                Any = NewNode;
+                //Any = NewNode;
             }
             else
             {
-                NewNode->next = Any->next;
+                NewNode->next = Any;
+                Any->prev->next = NewNode;
+                NewNode->prev = Any->prev;
+                Any->prev = NewNode;
+                Any = NewNode;
+                /*NewNode->next = Any->next;
                 NewNode->next->prev = NewNode;
                 NewNode->prev = Any;
                 Any->next = NewNode;
                 Any = NewNode;
+                */
             }
         };
 
@@ -232,8 +283,19 @@ class Ring { //doubly linked list with iterator
         void remove()
         {
             if(Any->next == Any)
+            {
             delete Any;
             Any = nullptr;
+            }
+            else
+            {
+                Node* pre = Any->prev;
+                Node* suc = Any->next;
+                pre->next = suc;
+                suc->prev = pre;
+                delete Any;
+                Any = suc;
+            }
         };
 
         bool is_empty() const
