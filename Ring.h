@@ -87,13 +87,13 @@ class Ring { //doubly linked list with iterator
                 iterator before = *this;
                 goPrev();
                 return before;
-            }
+            };
 
-            /*iterator operator=(const iterator& s)
+            iterator& operator=(const iterator& s)
             {
-                iterator(s);
+                itr = s.itr;
                 return *this;
-            };*/
+            };
 
             iterator operator+(int d)
             {};
@@ -156,7 +156,7 @@ class Ring { //doubly linked list with iterator
             {
                 for(int i = 0; i < n; i++)
                 goPrev();
-            }
+            };
 
         };
         typedef iterator<Key, Info> Iterator;
@@ -164,7 +164,7 @@ class Ring { //doubly linked list with iterator
 
         Iterator begin()
         {
-            return Iterator(Any->next);
+            return Iterator(Any);
         };
 
         Iterator end()
@@ -177,7 +177,7 @@ class Ring { //doubly linked list with iterator
             if(!Any)
             return Iterator(nullptr);
             else
-            return Iterator(Any->Prev);
+            return Iterator(Any->prev);
         };
 
         Const_Iterator const_begin() const 
@@ -194,7 +194,7 @@ class Ring { //doubly linked list with iterator
         {
             if(!Any) 
             return Const_Iterator(nullptr);
-            
+            else
             return Const_Iterator(Any->prev);
         };
 
@@ -212,13 +212,12 @@ class Ring { //doubly linked list with iterator
             Any = nullptr;
             if(!s.is_empty())
             {
-                Const_Iterator it = s.const_begin();
+              Const_Iterator it = s.const_begin();
                 do
                 {
                     insert(it);
                     it++;
                 } while (it != s.const_end());
-                
             }
         };
 
@@ -249,8 +248,8 @@ class Ring { //doubly linked list with iterator
         void insert(const Key& NewK, const Info& NewI)
         {
             Node* NewNode = new Node(NewK, NewI);
-            NewNode->key = NewK;
-            NewNode->info = NewI;
+            //NewNode->key = NewK;
+            //NewNode->info = NewI;
            if(!Any)
             {
                 Any = NewNode;
@@ -330,11 +329,11 @@ class Ring { //doubly linked list with iterator
             } while (it != const_end());
             
         };
-    //friend void split_pos<Key, Info>(const Ring<Key, Info>&, int, bool, int, Ring<Key, Info>&, int, bool, Ring<Key, Info>&, int, bool);
-    //friend void split_key<Key, Info>(const Ring<Key, Info>&, const Key&, int, bool, int, Ring<Key, Info>&, int, bool, Ring<Key, Info>&, int, bool);
+    friend void split_pos<Key, Info>(const Ring<Key, Info>&, int, bool, int, Ring<Key, Info>&, int, bool, Ring<Key, Info>&, int, bool);
+    friend void split_key<Key, Info>(const Ring<Key, Info>&, const Key&, int, bool, int, Ring<Key, Info>&, int, bool, Ring<Key, Info>&, int, bool);
 };
 
-/*template<typename Key, typename Info>
+template<typename Key, typename Info>
 void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int count, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2)
 {
     ring.const_begin() = start_pos;
@@ -347,7 +346,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int coun
         if(direct1 == true)
         {
             iter1 = ring.const_begin();
-            while(oc < len1)
+            while(oc < len1 && iter1 != nullptr)
             {
                 ring1.insert(iter1);
                 iter1++;
@@ -357,7 +356,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int coun
         else
         {
             iter1 = ring.const_last();
-            while(oc < len1)
+            while(oc < len1 && iter1 != nullptr)
             {
                 ring1.insert(iter1);
                 iter1++;
@@ -369,7 +368,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int coun
         if(direct2 == true)
         {
             iter2 = ring.const_begin();
-            while(oc < len2)
+            while(oc < len2 && iter2 != nullptr)
             {
                 ring2.insert(iter2);
                 iter2++;
@@ -379,7 +378,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int coun
         else 
         {
             iter2 = ring.const_last();
-            while(oc < len2)
+            while(oc < len2 && iter2 != nullptr)
             {
                 ring2.insert(iter2);
                 iter2++;
@@ -407,5 +406,5 @@ void split_key(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, 
 //
 //ring1={2,}{3,}{5,}{1,}{3,}{4,}{1,}{2,}
 //ring2={5,}{2,}{4,}
-}*/
+}
 #endif
