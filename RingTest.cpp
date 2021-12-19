@@ -68,6 +68,24 @@ void test6()
     r2.print();
 }
 
+void test7()
+{
+    Ring<int, int> R;
+    R.insert(5, 1);
+    R.insert(4, 1);
+    R.insert(3, 1);
+    R.insert(2, 1);
+    R.insert(1, 1);
+    Ring<int, int> r1;
+    Ring<int, int> r2;
+    split_key(R, 2, 10, true, 4, r1, 2, true, r2, 1, false);
+    R.print();
+    cout<< "" << endl; 
+    r1.print();
+    cout<< "" << endl;
+    r2.print();
+}
+
 
 
 int main()
@@ -77,6 +95,7 @@ int main()
     //test3();
     //test4();
     //test5();
-    test6();
+    //test6();
+    test7();
     return 0;
 }
