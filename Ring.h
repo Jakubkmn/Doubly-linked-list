@@ -59,6 +59,22 @@ class Ring { //doubly linked list with iterator
                 itr = s.itr;
             };
 
+            iterator(const Ring& s, int startPos)
+            {
+                itr = s.Any;
+                if(s.is_empty())
+                return;
+                int i = 0;
+                do 
+                {
+                    if(i = startPos)
+                    return;
+                    ++(*this);
+                    i++;
+                } while(itr != s.Any);
+                itr = nullptr;
+            }
+
             ~iterator()
             {
             };
@@ -158,6 +174,14 @@ class Ring { //doubly linked list with iterator
                 goPrev();
             };
 
+            void drct(bool n)
+            {
+                if(n == true)
+                    goPrev();
+                else 
+                    goNext();
+            }
+
         };
         typedef iterator<Key, Info> Iterator;
         typedef iterator<const Key, const Info> Const_Iterator;
@@ -227,14 +251,7 @@ class Ring { //doubly linked list with iterator
             if(!s.iter_valid())
             throw std::domain_error("Error");
             insert(s->key, s->info);
-        
-            /*Node* tmp = new Node;
-            if(s.itr == Any->prev)
-            {
-                s.itr->prev = tmp;
-            }
-            s.itr->prev = tmp;
-            tmp->prev->next=tmp;*/
+
         };
 
         /*void insertFront(const Key& NewK, const Info& NewI)
@@ -248,14 +265,11 @@ class Ring { //doubly linked list with iterator
         void insert(const Key& NewK, const Info& NewI)
         {
             Node* NewNode = new Node(NewK, NewI);
-            //NewNode->key = NewK;
-            //NewNode->info = NewI;
            if(!Any)
             {
                 Any = NewNode;
                 NewNode->next = NewNode;
                 NewNode->prev = NewNode;
-                //Any = NewNode;
             }
             else
             {
@@ -264,12 +278,6 @@ class Ring { //doubly linked list with iterator
                 NewNode->prev = Any->prev;
                 Any->prev = NewNode;
                 Any = NewNode;
-                /*NewNode->next = Any->next;
-                NewNode->next->prev = NewNode;
-                NewNode->prev = Any;
-                Any->next = NewNode;
-                Any = NewNode;
-                */
             }
         };
 
@@ -336,56 +344,35 @@ class Ring { //doubly linked list with iterator
 template<typename Key, typename Info>
 void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int count, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2)
 {
-    ring.const_begin() = start_pos;
-    typename Ring<Key, Info>::Const_Iterator iter1;
-    typename Ring<Key, Info>::Const_Iterator iter2;
-    int c = 0;
-    while(c < count)
-    {
-        int oc = 0;
-        if(direct1 == true)
-        {
-            iter1 = ring.const_begin();
-            while(oc < len1 && iter1 != nullptr)
-            {
-                ring1.insert(iter1);
-                iter1++;
-                oc++;
-            }
-        }
-        else
-        {
-            iter1 = ring.const_last();
-            while(oc < len1 && iter1 != nullptr)
-            {
-                ring1.insert(iter1);
-                iter1++;
-                oc++;
-            }
-        }
-        c++;
+    typename Ring<Key, Info>::Const_Iterator iter(ring, start_pos);
+    if(direct1 == true)
+        ring1.const_begin() = iter;
+    else 
+        ring1.const_end() = iter;   
 
-        if(direct2 == true)
-        {
-            iter2 = ring.const_begin();
-            while(oc < len2 && iter2 != nullptr)
+    if(direct2 == true)
+        ring2.const_begin() = iter;
+    else
+        ring2.const_end() = iter; 
+    int c = 0;            
+    while(c < count){
+            int oc = 0;
+            while(oc < len1)
             {
-                ring2.insert(iter2);
-                iter2++;
+                ring1.insert(iter);
+                iter.drct(direct);
                 oc++;
             }
-        }
-        else 
-        {
-            iter2 = ring.const_last();
-            while(oc < len2 && iter2 != nullptr)
-            {
-                ring2.insert(iter2);
-                iter2++;
+            c++;
+
+            oc = 0;
+            while(oc < len2){
+                ring2.insert(iter);
+                iter.drct(direct);
                 oc++;
             }
-        }
     }
+        
 }
 //ring={1,}{2,}{3,}{4,}{5,}
 //start_pos=1, direct=true, count=4

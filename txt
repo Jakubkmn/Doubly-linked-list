@@ -1,0 +1,50 @@
+ ring.const_begin() = start_pos;
+    typename Ring<Key, Info>::Const_Iterator iter(start_pos);
+    typename Ring<Key, Info>::Const_Iterator iter2;
+    int c = 0;
+    while(c < count)
+    {
+        int oc = 0;
+        if(direct1 == true)
+        {
+            iter1 = ring.const_begin();
+            while(oc < len1 && iter1 != nullptr)
+            {
+                ring1.insert(iter1);
+                iter1++;
+                oc++;
+            }
+        }
+        else
+        {
+            iter1 = ring.const_last();
+            while(oc < len1 && iter1 != nullptr)
+            {
+                ring1.insert(iter1);
+                iter1++;
+                oc++;
+            }
+        }
+        c++;
+
+        if(direct2 == true)
+        {
+            iter2 = ring.const_begin();
+            while(oc < len2 && iter2 != nullptr)
+            {
+                ring2.insert(iter2);
+                iter2++;
+                oc++;
+            }
+        }
+        else 
+        {
+            iter2 = ring.const_last();
+            while(oc < len2 && iter2 != nullptr)
+            {
+                ring2.insert(iter2);
+                iter2++;
+                oc++;
+            }
+        }
+    }
