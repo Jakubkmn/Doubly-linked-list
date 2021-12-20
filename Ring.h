@@ -254,14 +254,6 @@ class Ring { //doubly linked list with iterator
 
         };
 
-        /*void insertFront(const Key& NewK, const Info& NewI)
-        {
-            if(!s.iter_valid())
-            throw std::domain_error("Error");
-            Iterator s.it = begin();
-            insert(s.it, s->key, s->info);
-        };*/
-
         void insert(const Key& NewK, const Info& NewI)
         {
             Node* NewNode = new Node(NewK, NewI);
@@ -352,14 +344,14 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int coun
         ring1.const_last() = iter;   
 
     if(direct2 == true)
-        ring2.const_begin() = iter;
+        ring2.const_begin() = iter1;
     else
-        ring2.const_last() = iter;
+        ring2.const_last() = iter1;
     int c = 0;            
     while(c < count){
             int oc = 0;
             while(oc < len1)
-            {           
+            {         
                 ring1.insert(iter);
                 iter.drct(direct);
                 oc++;
@@ -370,7 +362,7 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int coun
             while(oc < len2){
                 iter1 = iter;
                 ring2.insert(iter1);
-                iter1.drct(direct);
+                iter.drct(direct);
                 oc++;
             }
     }
@@ -388,12 +380,12 @@ void split_pos(const Ring<Key, Info>& ring, int start_pos, bool direct, int coun
 template<typename Key, typename Info>
 void split_key(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, bool direct, int count, Ring<Key, Info>& ring1, int len1, bool direct1, Ring<Key, Info>& ring2, int len2, bool direct2)
 {
-    typename Ring<Key, Info>::Const_Iterator iter(ring, start_key);
+    typename Ring<Key, Info>::Const_Iterator iter(ring, 1);
     typename Ring<Key, Info>::Const_Iterator iter1;
     int a = 0;
-    while(ring.const_end() != iter)
+    while(iter != ring.const_last())
     {
-        if(ring.const_begin() == iter)
+        if(ring.Any->key == start_key)
         {
 
             a++;
@@ -409,15 +401,15 @@ void split_key(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, 
         ring1.const_last() = iter;   
 
     if(direct2 == true)
-        ring2.const_begin() = iter;
+        ring2.const_begin() = iter1;
     else
-        ring2.const_last() = iter;
+        ring2.const_last() = iter1;
     int c = 0;            
     while(c < count){
             int oc = 0;
             while(oc < len1)
             {           
-                ring1.insert(iter1);
+                ring1.insert(iter);
                 iter.drct(direct);
                 oc++;
             }
@@ -427,7 +419,7 @@ void split_key(const Ring<Key, Info>& ring, const Key& start_key,int start_occ, 
             while(oc < len2){
                 iter1 = iter;
                 ring2.insert(iter1);
-                iter1.drct(direct);
+                iter.drct(direct);
                 oc++;
             }
     }
